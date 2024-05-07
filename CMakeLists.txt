@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(cis565_path_tracer)
+project(cis565_path_tracer LANGUAGES C CXX CUDA)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -23,8 +23,8 @@ endif()
 ########################################
 # CUDA Setup
 ########################################
-find_package(CUDA 10 REQUIRED)
-include(${CMAKE_MODULE_PATH}/CUDAComputesList.cmake)
+find_package(CUDAToolkit)
+#include(${CMAKE_MODULE_PATH}/CUDAComputesList.cmake)
 
 list(APPEND CUDA_NVCC_FLAGS ${CUDA_GENERATE_CODE})
 list(APPEND CUDA_NVCC_FLAGS_DEBUG "-g -G")
@@ -37,26 +37,9 @@ endif(WIN32)
 ########################################
 
 find_package(OpenGL REQUIRED)
-
-if(UNIX)
-    find_package(glfw3 REQUIRED)
-    find_package(GLEW REQUIRED)
-    set(LIBRARIES glfw ${GLEW_LIBRARIES} ${OPENGL_gl_LIBRARY})
-else(UNIX)
-    set(EXTERNAL "external")
-
-    set(GLFW_ROOT_DIR ${EXTERNAL})
-    set(GLFW_USE_STATIC_LIBS ON)
-    find_package(GLFW REQUIRED)
-
-    set(GLEW_ROOT_DIR ${EXTERNAL})
-    set(GLEW_USE_STATIC_LIBS ON)
-    find_package(GLEW REQUIRED)
-
-    add_definitions(${GLEW_DEFINITIONS})
-    include_directories(${GLEW_INCLUDE_DIR} ${GLFW_INCLUDE_DIR})
-    set(LIBRARIES ${GLEW_LIBRARY} ${GLFW_LIBRARY} ${OPENGL_LIBRARY})
-endif(UNIX)
+find_package(glfw3 REQUIRED)
+find_package(GLEW REQUIRED)
+set(LIBRARIES glfw ${GLEW_LIBRARIES} ${OPENGL_gl_LIBRARY})
 
 set(GLM_ROOT_DIR "external")
 find_package(GLM REQUIRED)
@@ -94,7 +77,7 @@ source_group(Sources FILES ${sources})
 
 #add_subdirectory(stream_compaction)  # TODO: uncomment if using your stream compaction
 
-cuda_add_executable(${CMAKE_PROJECT_NAME} ${sources} ${headers})
+add_executable(${CMAKE_PROJECT_NAME} ${sources} ${headers})
 target_link_libraries(${CMAKE_PROJECT_NAME}
     ${LIBRARIES}
     #stream_compaction  # TODO: uncomment if using your stream compaction
